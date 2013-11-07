@@ -57,6 +57,6 @@ document.onkeydown = function(e) {
       </object>
       <a id="im2" href="/vote/{{id2}}/{{id1}}"> This one! </a>
     </div>
-    <p> You can also use the <em>left and right arrow keys</em> to select a logo.  Or are <a href="/hate/{{id1}}/{{id2}}">both terrible</a>?
+    <p> You can also use the <em>left and right arrow keys</em> to select a logo.
   </body>
 </html>

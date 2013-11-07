@@ -16,6 +16,7 @@ START = [(-1, 0, "pt.0"), (-.5, 0, "pt.1"),
 MOVE_SIGMA = .25
 SPLIT_PROB = .1
 CLONE_PROB = .5
+RANDOM_PROB = .1
 MIN_LENGTH = .1
 POOL_SIZE = 20
 FRAC_KICK = .6
@@ -124,13 +125,13 @@ def write_svg(f, s):
     with open(f, "wt") as f:
         f.write(make_svg(s))
 
+def mutate_lots(s):
+    for i in range(20):
+        s = mutate(s)
+    return s
+
 class Pool:
     def __init__(self):
-        def mutate_lots(s):
-            for i in range(20):
-                s = mutate(s)
-            return s
-
         self.pool = [(make_id("img"), mutate_lots(START)) for i in range(POOL_SIZE)]
         self.scores = {id: [0, 0] for (id, s) in self.pool}
 
@@ -184,21 +185,25 @@ class Pool:
         self.introduce()
 
     def introduce(self):
-        if random.random() < CLONE_PROB:
-            _, exist = self.choose()
+        while len(self.pool) < POOL_SIZE:
+            r = random.random()
+            if r < CLONE_PROB:
+                _, old = self.choose()
+                s = mutate(old)
+            elif r < CLONE_PROB + RANDOM_PROB:
+                s = mutate_lots(START)
+            else:
+                old1, old2 = [s for _, s in random.sample(self.pool, 2)]
+                s = cross(old1, old2)
+
             id = make_id("img")
-            s = mutate(exist)
-            self.pool.append((id, s))
-            self.scores[id] = [0, 0]
-        else:
-            s1, s2 = [s for id, s in random.sample(self.pool, 2)]
-            id = make_id("img")
-            s = cross(s1, s2)
+            while id in self.scores:
+                id = make_id("img")
+
             self.pool.append((id, s))
             self.scores[id] = [0, 0]
 
-        write_svg("imgs/" + id + ".svg", s)
-        self.save()
+            write_svg("imgs/" + id + ".svg", s)
 
 POOL = None
 
