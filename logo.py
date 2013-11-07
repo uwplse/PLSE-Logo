@@ -1,8 +1,13 @@
 from __future__ import division
+
+# Greenlet-based threading
+import gevent; gevent.monkey.patch_all()
+
 import random
 import math
 import pickle
 import os
+import sys
 
 START = [(-1, 0, "pt.0"), (-.5, 0, "pt.1"),
          (0, 0, "pt.2"), (.5, 0, "pt.3"),
@@ -237,4 +242,14 @@ if __name__ == "__main__":
     if os.path.exists(FILE):
         POOL.load()
 
-    bottle.run(host="localhost", port=8000, debug=True, reload=True)
+    def save_periodically():
+        while True:
+            gevent.sleep(60) # Every minute
+            POOL.save()
+
+    gevent.spawn(save_periodically)
+
+    if len(sys.argv) > 1 and sys.argv[1] == "debug":
+        bottle.run(host="localhost", port=8000, server="gevent", debug=True, reload=True)
+    else:
+        bottle.run(host="0.0.0.0", port=8000, server="gevent")
