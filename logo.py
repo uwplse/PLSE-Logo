@@ -1,6 +1,8 @@
 from __future__ import division
 import random
 import math
+import pickle
+import os
 
 START = [(-1, 0, "pt.0"), (-.5, 0, "pt.1"),
          (0, 0, "pt.2"), (.5, 0, "pt.3"),
@@ -12,7 +14,7 @@ CLONE_PROB = .5
 MIN_LENGTH = .1
 POOL_SIZE = 10
 FRAC_KICK = .6
-
+FILE = "pool.pickle"
 
 def make_id(s):
     return s + str(round(random.random(), 9))[1:]
@@ -127,8 +129,24 @@ class Pool:
         self.pool = [(make_id("img"), mutate_lots(START)) for i in range(POOL_SIZE)]
         self.scores = {id: [0, 0] for (id, s) in self.pool}
 
+        for id, s in self.pool:
+            write_svg("imgs/" + id + ".svg", s)
+
     def choose(self):
         return random.choice(self.pool)
+
+    def save(self):
+        with open(FILE, "wb") as f:
+            pickle.dump((self.pool, self.scores), f)
+
+    def load(self):
+        with open(FILE, "rb") as f:
+            pool, scores = pickle.load(f)
+        self.pool = pool
+        self.scores = scores
+
+        for id, s in self.pool:
+            write_svg("imgs/" + id + ".svg", s)
 
     def vote(self, win_id, lose_id):
         try:
@@ -174,6 +192,9 @@ class Pool:
             self.scores[id] = [0, 0]
 
 POOL = Pool()
+        self.save()
+
+POOL = None
 
 import bottle
 bottle.TEMPLATE_PATH.append(".")
@@ -208,4 +229,9 @@ def hate(id1, id2):
     bottle.redirect("/")
 
 if __name__ == "__main__":
+    POOL = Pool()
+
+    if os.path.exists(FILE):
+        POOL.load()
+
     bottle.run(host="localhost", port=8000, debug=True, reload=True)
