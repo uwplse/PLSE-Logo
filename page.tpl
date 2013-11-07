@@ -27,6 +27,22 @@ hyphens: auto;
 text-align: justify;
 }
     </style>
+    <script>
+document.onkeydown = function(e) {
+    e = e || event;
+    console.log(e.keyCode);
+    switch (e.keyCode) {
+        case 37:
+            window.location.href = document.getElementById("im1").href;
+            break;
+        case 39:
+            window.location.href = document.getElementById("im2").href;
+            break;
+        default:
+            return true;
+    }
+}
+    </script>
   </head>
   <body>
     <p>Which logo best represents <em>PLSE (pronounced “pulse”)</em>, the
@@ -35,13 +51,13 @@ text-align: justify;
     <div>
       <object type="image/svg+xml" data="/imgs/{{id1}}.svg" width="200" height="200">
       </object>
-      <a href="/vote/{{id1}}/{{id2}}"> This one! </a>
+      <a id="im1" href="/vote/{{id1}}/{{id2}}"> This one! </a>
     </div>
     <div>
       <object type="image/svg+xml" data="/imgs/{{id2}}.svg" width="200" height="200">
       </object>
-      <a href="/vote/{{id2}}/{{id1}}"> This one! </a>
+      <a id="im2" href="/vote/{{id2}}/{{id1}}"> This one! </a>
     </div>
-    <p> Or are <a href="/hate/{{id1}}/{{id2}}">both terrible</a>?
+    <p> You can also use the <em>left and right arrow keys</em> to select a logo.  Or are <a href="/hate/{{id1}}/{{id2}}">both terrible</a>?
   </body>
 </html>
