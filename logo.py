@@ -2,13 +2,15 @@ from __future__ import division
 import random
 import math
 
-START = [(-1, 0, "pt.0"), (1, 0, "pt.1")]
+START = [(-1, 0, "pt.0"), (-.5, 0, "pt.1"),
+         (0, 0, "pt.2"), (.5, 0, "pt.3"),
+         (1, 0, "pt.4")]
 
 MOVE_SIGMA = .25
 SPLIT_PROB = .1
-CLONE_PROB = .25
+CLONE_PROB = .5
 MIN_LENGTH = .1
-POOL_SIZE = 100
+POOL_SIZE = 10
 FRAC_KICK = .6
 
 
@@ -17,16 +19,16 @@ def make_id(s):
 
 def move_pt(s, idx):
     dx, dy = random.gauss(0, MOVE_SIGMA), random.gauss(0, MOVE_SIGMA)
-
-    if idx == 0 or idx == len(s) - 1:
-        dx = 0
-
     s[idx] = (s[idx][0] + dx, s[idx][1] + dy, s[idx][2])
     return s
 
 def mutate_move(s):
     idx = random.randint(0, len(s)-1)
     return move_pt(s, idx)
+
+def mutate_delete(s):
+    idx = random.randint(0, len(s)-1)
+    del s[idx]
 
 def mutate_split(s):
     idx = random.randint(1, len(s)-1)
@@ -51,9 +53,12 @@ def mutate(s):
     snext = None
     while not snext or not valid_logo(snext):
         snext = s[:]
+        r = random.random()
 
-        if random.random() < SPLIT_PROB:
+        if r < SPLIT_PROB:
             snext = mutate_split(snext)
+        elif r < SPLIT_PROB + SPLIT_PROB:
+            snext = mutate_delete(snext)
         else:
             snext = mutate_move(snext)
     return snext
@@ -65,7 +70,7 @@ def cross(s1, s2):
 
     s = []
     idx1, idx2 = 0, 0
-    while idx1 < len(s1):
+    while idx1 < len(s1) and idx2 < len(s2):
         # Inv: idx1 == len(s1) <=> idx2 = len(s2)
 
         pt1 = s1[idx1]
@@ -73,20 +78,19 @@ def cross(s1, s2):
         # Inv: pt1[2] == pt2[2]
 
         # Pick some intermediate between the two points
-        w = random.random()
-        newx = w * pt1[0] + (1 - w) * pt2[0]
-        newy = w * pt1[1] + (1 - w) * pt2[1]
+        u = random.random()
+        v = random.random()
+        newx = u * pt1[0] + (1 - u) * pt2[0]
+        newy = v * pt1[1] + (1 - v) * pt2[1]
         s.append((newx, newy, pt1[2]))
-
-        if idx1 == len(s1) - 1: break
 
         # Find the next shared point
         ndx1 = idx1 + 1
-        while s1[ndx1][2] not in shared_ids:
+        while ndx1 < len(s1) and s1[ndx1][2] not in shared_ids:
             ndx1 += 1
 
         ndx2 = idx2 + 1
-        while s2[ndx2][2] not in shared_ids:
+        while ndx2 < len(s2) and s2[ndx2][2] not in shared_ids:
             ndx2 += 1
 
         if random.random() < .5:
@@ -127,8 +131,11 @@ class Pool:
         return random.choice(self.pool)
 
     def vote(self, win_id, lose_id):
-        score1 = self.scores[win_id]
-        score2 = self.scores[lose_id]
+        try:
+            score1 = self.scores[win_id]
+            score2 = self.scores[lose_id]
+        except:
+            return
         score1[0] += 1
         score2[1] += 1
 
@@ -137,7 +144,10 @@ class Pool:
             self.kick(lose_id)
 
     def hate(self, id):
-        score = self.scores[id]
+        try:
+            score = self.scores[id]
+        except:
+            return
         score[1] += 1
 
         if score[1] < 3: return
@@ -172,7 +182,10 @@ bottle.TEMPLATE_PATH.append(".")
 @bottle.view("page")
 def page():
     id1, s1 = POOL.choose()
-    id2, s2 = POOL.choose()
+    id2, s2 = id1, None
+
+    while id2 == id1:
+        id2, s2 = POOL.choose()
 
     write_svg("imgs/" + id1 + ".svg", s1)
     write_svg("imgs/" + id2 + ".svg", s2)
