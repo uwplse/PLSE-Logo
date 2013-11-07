@@ -30,7 +30,6 @@ text-align: justify;
     <script>
 document.onkeydown = function(e) {
     e = e || event;
-    console.log(e.keyCode);
     switch (e.keyCode) {
         case 37:
             window.location.href = document.getElementById("im1").href;
