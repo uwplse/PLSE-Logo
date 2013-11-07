@@ -182,15 +182,17 @@ class Pool:
         if random.random() < CLONE_PROB:
             _, exist = self.choose()
             id = make_id("img")
-            self.pool.append((id, mutate(exist)))
+            s = mutate(exist)
+            self.pool.append((id, s))
             self.scores[id] = [0, 0]
         else:
             s1, s2 = [s for id, s in random.sample(self.pool, 2)]
             id = make_id("img")
-            self.pool.append((id, cross(s1, s2)))
+            s = cross(s1, s2)
+            self.pool.append((id, s))
             self.scores[id] = [0, 0]
 
-POOL = Pool()
+        write_svg("imgs/" + id + ".svg", s)
         self.save()
 
 POOL = None
@@ -207,10 +209,12 @@ def page():
     while id2 == id1:
         id2, s2 = POOL.choose()
 
-    write_svg("imgs/" + id1 + ".svg", s1)
-    write_svg("imgs/" + id2 + ".svg", s2)
-
     return dict(id1=id1, id2=id2)
+
+@bottle.get("/pool")
+@bottle.view("pool")
+def pool():
+    return dict(opts=POOL.scores.items())
 
 @bottle.get("/imgs/:fn")
 def imgs(fn):
