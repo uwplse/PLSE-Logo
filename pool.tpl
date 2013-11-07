@@ -2,11 +2,11 @@
 <html>
   <head>
     <meta charset="utf8" />
-    <title>Decide the next PLSE Logo</title>
+    <title>PLSE Logo Gene pool</title>
     <style>
 /* Style goes here */
 body {
-max-width: 550px;
+max-width: 650px;
 margin: 10px auto;
 padding: 0;
 }
@@ -18,13 +18,13 @@ display: block;
 div {
 width: 200px;
 text-align: center;
-margin: 35px;
+margin: 5px;
 float: left;
 }
 
 p {
 hyphens: auto;
-text-align: justify;
+text-align: center;
 }
     </style>
   </head>
