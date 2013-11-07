@@ -108,7 +108,7 @@ def make_svg(s):
     template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="200" height="200"> <g>
   <rect width="180" height="180" x="10" y="10" style="fill:#39275b" />
-  <path style="fill:none;stroke:#ffffff;stroke-width:9;" d="M {}" />
+  <path style="fill:none;stroke:#ffffff;stroke-width:14;" d="M {}" />
 </g> </svg> """
 
     s = [(-1.1, s[0][1])] + s + [(1.1, s[-1][1])]
@@ -122,7 +122,7 @@ def write_svg(f, s):
 class Pool:
     def __init__(self):
         def mutate_lots(s):
-            for i in range(25):
+            for i in range(20):
                 s = mutate(s)
             return s
 
@@ -173,8 +173,7 @@ class Pool:
             self.kick(id)
 
     def kick(self, id):
-        idx = [i for (i, (id, s)) in enumerate(self.pool)][0]
-        id = self.pool[idx][0]
+        idx = [i for (i, (id_, s)) in enumerate(self.pool) if id_ == id][0]
         del self.pool[idx]
         del self.scores[id]
         self.introduce()
