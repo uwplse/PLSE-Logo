@@ -221,10 +221,19 @@ def page():
 
     return dict(id1=id1, id2=id2)
 
+def wilson_lb(good, bad):
+    if good + bad == 0:
+        return 0
+    else:
+        return ((good + 1.9208) / (good + bad)
+                - 1.96 * math.sqrt((good * bad) / (good + bad) + 0.9604) /
+                (good + bad)) / (1 + 3.8416 / (good + bad))
+
 @bottle.get("/pool")
 @bottle.view("pool")
 def pool():
-    return dict(opts=POOL.scores.items())
+    items = POOL.scores.items()
+    return dict(opts=sorted(items, key=lambda x: wilson_lb(x[1][0], x[1][1]), reverse=True))
 
 @bottle.get("/imgs/:fn")
 def imgs(fn):
