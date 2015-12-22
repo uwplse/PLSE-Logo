@@ -46,7 +46,7 @@ document.onkeydown = function(e) {
   <body>
     <p>Which logo best represents <em>PLSE (pronounced “pulse”)</em>, the
     <em>programming languages and software engineering</em>
-    research group at the <em>University of Washington</em>.</p>
+    research group at the <em>University of Washington</em>?</p>
     <div>
       <object type="image/svg+xml" data="/imgs/{{id1}}.svg" width="200" height="200">
       </object>
