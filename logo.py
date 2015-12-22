@@ -261,6 +261,6 @@ if __name__ == "__main__":
     save_periodically()
 
     if len(sys.argv) > 1 and sys.argv[1] == "debug":
-        bottle.run(host="localhost", port=8000, debug=True, reload=True)
+        bottle.run(host="localhost", port=8001, debug=True, reload=True)
     else:
-        bottle.run(host="0.0.0.0", port=8000, reload=True)
+        bottle.run(host="0.0.0.0", port=8001, reload=True)
