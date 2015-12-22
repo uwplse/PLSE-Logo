@@ -29,8 +29,7 @@ text-align: center;
     </style>
   </head>
   <body>
-    <p>Here is the gene pool for the PLSE logo genetic algorithm, from most to least successful.
-      Now with statistics!</p>
+    <p>The current pool of PLSE logos, from most to least successful.</p>
     % for opt in opts:
     <div>
       <object type="image/svg+xml" data="/imgs/{{opt[0]}}.svg" width="200" height="200">
