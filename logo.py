@@ -231,7 +231,7 @@ def wilson_lb(good, bad):
 @bottle.view("pool")
 def pool():
     items = POOL.scores.items()
-    return dict(opts=sorted(items, key=lambda x: wilson_lb(x[1][0], x[1][1]), reverse=True))
+    return dict(opts=sorted(items, key=lambda x: wilson_lb(float(x[1][0]), float(x[1][1])), reverse=True))
 
 @bottle.get("/imgs/:fn")
 def imgs(fn):
